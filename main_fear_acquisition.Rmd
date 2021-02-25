@@ -1,0 +1,31 @@
+---
+title: "main_fear_acquisition"
+author: "Vera Bouwman"
+date: "2/25/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r load packages}
+library(here)
+library(ggplot2)
+library(tidyverse)
+```
+
+```{r load data}
+acquisition_expectancy <- read.csv("data/processed/acquisition_expectancy.csv")
+acquisition_fear <- read.csv("data/processed/acquisition_fear.csv")
+```
+
+## Visualization 
+
+In the figures below, you will see US expectancy ratings during the acquisition phase (6 trials).
+
+```{r expectancy visualization}
+
+
+
+```

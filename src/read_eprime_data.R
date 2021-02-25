@@ -1,0 +1,90 @@
+##################################################
+#### Repro workshop - fear acquisition ##########
+#### Read .txt files from eprime into R #########
+#### Author: Vera Bouwman #######################
+################################################
+
+# Load packages
+library(rprime)
+library(tidyverse)
+library(stringr)
+library(here)
+
+
+#### Read eprime data ###########################
+# Based on script created by Stefan Vermeent
+
+# Specify which nested levels you want to keep in the final dataset.
+levels_to_retain <- c(1, 2, 3, 5)
+
+# Trials to keep
+trials_to_retain <- c(
+  "Header", "PracticeVAS", "HabTrials", "Habituation",
+  "AcqTrial1A", "AcqTrial2A", "AcqTrial3A", "AcqTrial4A",
+  "AcqTrial5A", "AcqTrial6A", "SelectCS2CS3", "Test",
+  "Acquisition", "Involuntary", "Demog", "QuestionsExit"
+)
+
+# Variables to keep
+keep_variables <- c(
+  "subject", "Eprime.LevelName", "Sample", "Cycle", "Running",
+  "Procedure", "ITI", "CSplus", "CSmin1", "CSmin2",
+  "VasScore_verwachting", "VasScore_Angst", "VasScore_PreCS1",
+  "VasScore_PreCS2", "VasScore_PreCS3", "VasScore_PostCS1",
+  "VasScore_PostCS2", "VasScore_PostCS3", "VasScore_FilmOnaangenaam",
+  "VasScore_CueOnaangenaam", "OefenVASverwachting.RT",
+  "OefenVASverwachting.RESP", "OefenVASAngst.RT", "OefenVASAngst.RESP",
+  "CS1VAS.RT", "CS1VAS.RESP", "CS2VAS.RT", "CS2VAS.RESP", "CS3VAS.RT",
+  "CS3VAS.RESP", "CSmin1Verwachting.RT", "CSmin1Verwachting.RESP",
+  "CSmin1Angst.RT", "CSmin1Angst.RESP", "CSmin2Verwachting.RT",
+  "CSmin2Verwachting.RESP", "CSmin2Angst.RT", "CSmin2Angst.RESP",
+  "CSplusVerwachting.RT", "CSplusVerwachting.RESP", "CSplusAngst.RT",
+  "CSplusAngst.RESP", "CSplusVerwachting1.RT", "CSplusVerwachting1.RESP",
+  "CSplusAngst1.RT", "CSplusAngst1.RESP", "VasScore_FilmOnaangenaam",
+  "VasScore_CueOnaangenaam", "Geslacht.RESP", "Leeftijd.RESP"
+)
+
+# List file names
+file_names <- list.files(
+  path = here("./data/raw/"), 
+  pattern = "*.txt"
+)
+
+# A function that goes through all the steps to transform the text file into a tidy dataframe.
+read_files <- function(x, y) {
+  parse_data <- read_eprime(x) %>%
+    FrameList()
+
+  preview_levels(parse_data)
+
+  individual_data <- keep_levels(parse_data, levels_to_retain) %>%
+    filter_in(., "Running", trials_to_retain) %>%
+    to_data_frame()
+
+  individual_tidy <- individual_data %>%
+    mutate(subject = ifelse(is.na(Subject), Subject[1], Subject)) %>%
+    select(-Subject) %>%
+    .[, c(max(ncol(.)), 1:(ncol(.) - 1))]
+}
+
+# read all eprime files
+output <- vector("list", length(file_names))
+
+for (i in seq_along(file_names)) {
+  output[[i]] <- read_files(
+    paste0(
+      here("./data/raw/"), 
+      file_names[[i]]
+      ), 
+    full_data)
+}
+
+# Combine the individual datasets created in the loop into one full dataset.
+data_eprime <- bind_rows(output)
+
+# Keep variables
+tidy_data_eprime <- data_eprime %>%
+  dplyr::select(one_of(keep_variables))
+
+# Save data as CSV file
+write_csv(tidy_data_eprime, here("./data/processed/data_eprime.csv"))
