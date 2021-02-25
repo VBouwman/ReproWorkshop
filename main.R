@@ -85,7 +85,7 @@ read_files <- function(x, y) {
 # A loop that makes sure that the read_files function is applied to all the individual datafiles in the working directory
 output <- vector("list", length(file_names_study3)) 
 for (i in seq_along(file_names_study3)) {
-  output[[i]] <- read_files(file_names_study3[[i]], here(full_data)
+  output[[i]] <- read_files(paste0(here("./data/raw/"), file_names_study3[[i]]), full_data)
 }
 
 # Combine the individual datasets created in the loop into one full dataset.
@@ -101,4 +101,6 @@ tidy_data_eprime_study3 <- data_eprime_study3 %>%
   dplyr::select(one_of(keep_variables_study3)) 
 
 # Save data as CSV file
-write_csv(tidy_data_eprime_study3, "data_eprime_study3.csv")
+write_csv(tidy_data_eprime_study3, here("./data/processed/data_eprime_study3.csv"))
+
+
