@@ -35,6 +35,9 @@ First run the read_eprime_data.R file, second the process_data.R. These generate
     │   └── output         <- Other output for the manuscript or reports (PG)
     └── src                <- Source code for this project (HW)
 
+## Dependencies
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/VBouwman/ReproWorkshop/main)
+
 ## License
 
 This project is licensed under the terms of the [MIT License](/LICENSE.md)
