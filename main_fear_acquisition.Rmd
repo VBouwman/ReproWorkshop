@@ -86,3 +86,33 @@ ANOVA_last_fear<- lm(response ~ CS, last_trial_fear) %>%
 
 kable(ANOVA_last_fear, caption = "ANOVA of last fear trial", digits = 3)
 ```
+
+## Plots
+
+```{r last CS trials}
+#Expectancy
+plot_last_exp <- last_trial_expectancy %>% 
+  group_by(CS) %>% 
+  summarise(response = mean(response)) 
+
+ggplot(plot_last_exp, aes(CS, response)) +
+  geom_col() +
+  theme_classic() +
+  labs(caption = "Last expectancy trial", y = "Expectancy")
+
+ggsave(here("./results/figures/plot_last_expectancy.png"), width = 10, height = 5) 
+
+#Fear
+plot_last_fear <- last_trial_fear %>% 
+  group_by(CS) %>% 
+  summarise(response = mean(response)) 
+
+ggplot(plot_last_fear, aes(CS, response)) +
+  geom_col() +
+  theme_classic() +
+  labs(caption = "Last fear trial", y = "Fear") +
+  ylim(0,50)
+  
+ggsave(here("./results/figures/plot_last_fear.png"), width = 10, height = 5) 
+
+```
