@@ -58,7 +58,7 @@ acquisition_expectancy <- data_acquisition %>%
   select(
     subject, CS, trial, 
     Acquisitie_verwachting, acq
-    )%>% 
+    ) %>% 
   
   unite(CS, acq, CS, trial) %>% 
   
@@ -79,7 +79,6 @@ acquisition_expectancy <- data_acquisition %>%
     Acquisition_verwachting_CS2_6, Acquisition_verwachting_CS3_6
     )
 
-# Write acquisition_expectancy data to .csv file
 write_csv(acquisition_expectancy, here("./data/processed/acquisition_expectancy.csv"))
 
 # Select acquisition trials on fear outcome
@@ -148,5 +147,4 @@ acquisition_fear <-data_acquisition %>%
     Acquisition_angst_CS2_6, Acquisition_angst_CS3_6
     )
 
-# Write acquisition_fear data to .csv file
 write_csv(acquisition_fear, here("./data/processed/acquisition_fear.csv"))

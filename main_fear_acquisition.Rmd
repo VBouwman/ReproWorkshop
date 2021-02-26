@@ -1,5 +1,5 @@
 ---
-title: "main_fear_acquisition"
+title: "Fear Acquisition"
 author: "Vera Bouwman"
 date: "2/25/2021"
 output: html_document
@@ -9,23 +9,80 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r load packages}
+```{r load packages, include=FALSE,echo=FALSE}
 library(here)
 library(ggplot2)
 library(tidyverse)
+library(car)
+library(broom)
+library(knitr)
 ```
+
+## Introduction
+
+ANOVAs are performed to compare the three CSs (CS1, CS2, CS3) on the first en last trial on expectancy and fear outcome. We expect the three CSsen to be similar at the first trial. At the last trial, we expect the CS1 to be high and the CS2 en CS3 to be low.
+
+## Analyses
 
 ```{r load data}
 acquisition_expectancy <- read.csv("data/processed/acquisition_expectancy.csv")
 acquisition_fear <- read.csv("data/processed/acquisition_fear.csv")
 ```
 
-## Visualization 
+```{r analyses for expectancy}
 
-In the figures below, you will see US expectancy ratings during the acquisition phase (6 trials).
+# Make long format
+expectancy_long <- acquisition_expectancy %>% 
+  pivot_longer(contains("verwachting"), names_to = "CS", values_to = "response") %>% 
+  separate(CS, into = c("acq", "exp", "CS", "trial")) %>% 
+  select(c(-acq,-exp))
 
-```{r expectancy visualization}
+# ANOVA to compare CSsen on first trial
+first_trial_expectancy <- expectancy_long %>% 
+  filter(trial == 1)
 
+ANOVA_first_expectancy <- lm(response ~ CS, first_trial_expectancy) %>% 
+  Anova(type = 3) %>% 
+  tidy()
 
+kable(ANOVA_first_expectancy, caption = "ANOVA of first expectancy trial", digits = 3)
 
+# ANOVA to compare CSsen on last trial
+last_trial_expectancy <- expectancy_long %>% 
+  filter(trial == 6)
+
+ANOVA_last_expectancy <- lm(response ~ CS, last_trial_expectancy) %>% 
+  Anova(type = 3) %>% 
+  tidy()
+
+kable(ANOVA_last_expectancy, caption = "ANOVA of last expectancy trial", digits = 3)
+```
+
+```{r analyses for fear}
+
+# Make long format
+fear_long <- acquisition_fear %>% 
+  pivot_longer(contains("angst"), names_to = "CS", values_to = "response") %>% 
+  separate(CS, into = c("acq", "fear", "CS", "trial")) %>% 
+  select(c(-acq,-fear)) 
+
+# ANOVA to compare CSsen on first trial
+first_trial_fear <- fear_long %>% 
+  filter(trial == 1)
+
+ANOVA_first_fear <- lm(response ~ CS, first_trial_fear) %>% 
+  Anova(type = 3) %>% 
+  tidy()
+
+kable(ANOVA_first_fear, caption = "ANOVA of first fear trial", digits = 3)
+
+# ANOVA to compare CSsen on last trial
+last_trial_fear <- fear_long %>% 
+  filter(trial == 6)
+
+ANOVA_last_fear<- lm(response ~ CS, last_trial_fear) %>% 
+  Anova(type = 3) %>% 
+  tidy()
+
+kable(ANOVA_last_fear, caption = "ANOVA of last fear trial", digits = 3)
 ```
